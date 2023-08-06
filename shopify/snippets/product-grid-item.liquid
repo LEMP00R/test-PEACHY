@@ -1,0 +1,54 @@
+<div class="product-card">
+  {% if product.featured_image != blank %}
+    <a class="product-card__image-wrapper" href="{{- product.url -}}">
+      {% render 'image-srcset', image: product.featured_image, classes: 'product-card__image' %}
+    </a>
+  {% endif %}
+
+  <a class="product-card__title" href="{{- product.url -}}">
+    {{- product.title -}}
+  </a>
+
+  <form
+    action="/cart/add"
+    method="post"
+    data-cart-submit
+  >
+    <variant-swatch>
+      {% if product.variants.size > 1 %}
+        <label class="product-card__variants-wrapper" for="{{- section_id -}}-{{- product.id -}}">
+          <select id="{{- section_id -}}-{{- product.id -}}" class="product-card__variants js-variant-swatch-select" name="id">
+            {% for variant in product.variants %}
+              <option
+                value="{{ variant.id }}"
+                {% if product.selected_or_first_available_variant == variant %}selected="selected"{% endif %}
+                {% unless variant.available %}disabled="disabled"{% endunless %}
+                data-price="{{ variant.price | money_with_currency }}"
+              >
+                {{ variant.title }}
+              </option>
+            {% endfor %}
+          </select>
+
+          {% render 'icon-select' %}
+        </label>
+      {% else %}
+        <input
+          type="hidden"
+          name="id"
+          value="{{ product.selected_or_first_available_variant.id }}"
+        >
+      {% endif %}
+
+      <div class="product-card__button-wrapper">
+        <button {% unless product.available %}disabled="disabled" {% endunless %}class="product-card__button" type="submit">
+          {% if product.available %}
+            <span class="js-variant-swatch-price">{{ product.selected_or_first_available_variant.price | money_with_currency }}</span> | {{ 'action.add_to_cart' | t }}
+          {% else %}
+            {{ 'common.sold_out' | t }}
+          {% endif %}
+        </button>
+      </div>
+    </variant-swatch>
+  </form>
+</div>

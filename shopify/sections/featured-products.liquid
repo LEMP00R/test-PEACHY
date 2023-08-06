@@ -1,0 +1,71 @@
+{%- liquid
+  assign title = section.settings.title
+  assign product_list = section.settings.product_list
+  assign background = section.settings.background
+  assign background_mobile = section.settings.background_mobile
+-%}
+
+{% if product_list != blank %}
+  <div
+    data-section-type="featured-products"
+    data-section-id="{{ section.id }}"
+    class="featured-products"
+  >
+    {% if background != blank %}
+      {% render 'image-srcset', image: background, mobile_image: background_mobile, classes: 'featured-products__background' %}
+    {% endif %}
+
+    <div class="container featured-products__container js-featured-product">
+      {% if title != blank %}
+        <h2 class="featured-products__title">
+          {{- title -}}
+        </h2>
+      {% endif %}
+
+      <div class="featured-products__wrapper swiper-wrapper">
+        {% for product in product_list %}
+          <div class="featured-products__item swiper-slide">
+            {% render 'product-grid-item', product: product, section_id: section.id %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="featured-products__pagination js-featured-product-pagination"></div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Featured Products",
+    "tag": "section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "our best sellers"
+      },
+      {
+        "type": "product_list",
+        "id": "product_list",
+        "label": "Products"
+      },
+      {
+        "type": "image_picker",
+        "id": "background",
+        "label": "Background"
+      },
+      {
+        "type": "image_picker",
+        "id": "background_mobile",
+        "label": "Background mobile"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured Products"
+      }
+    ]
+  }
+{% endschema %}
